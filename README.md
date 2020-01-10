@@ -23,7 +23,7 @@ AndroidManifest.xml
     </application>
 </manifest>
   
-MainActivity.kt 
+MainActivity.kt 程式進入點
   class MainActivity : AppCompatActivity() {
     var TAG = "MainActivity"
     var OVERLAY_PERMISSION_REQ_CODE = 999
