@@ -16,8 +16,6 @@ class MainActivity : AppCompatActivity() {
     var OVERLAY_PERMISSION_REQ_CODE = 999
     var content:Context? = null
 
-    private var enabled = true
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -34,14 +32,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-//        if (enabled && hasOverlayPermission()) {
-//            val intent = Intent(this, FLoatService::class.java)
-//            startService(intent)
-//        }
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode === OVERLAY_PERMISSION_REQ_CODE) {
@@ -55,6 +45,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    //判斷是否以獲取  permission
     fun hasOverlayPermission(): Boolean {
         if (Build.VERSION.SDK_INT >= 23)
             return Settings.canDrawOverlays(this)
@@ -62,16 +53,12 @@ class MainActivity : AppCompatActivity() {
             return true
     }
 
+    //進入Android permission權限獲取頁面
     fun requestOverlayPermission(requestCode: Int) {
         if (Build.VERSION.SDK_INT >= 23) {
             val intent = Intent(
                 Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
             startActivityForResult(intent, requestCode)
         }
-    }
-
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        enabled = false
-        return super.onTouchEvent(event)
     }
 }

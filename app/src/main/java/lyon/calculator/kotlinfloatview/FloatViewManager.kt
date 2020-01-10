@@ -15,15 +15,8 @@ import kotlin.math.roundToInt
 
 class FloatViewManager() {
     val TAG = FloatViewManager::class.java.simpleName
-
-    //本類例項
-    var instance: FloatViewManager? = null
     //自定義的FloatView
     private var mFloatView: View? = null
-    //懸浮球寬度
-    var floatWidth = 400
-    //懸浮球高度
-    var floatHeight = 800
     //視窗管理類
     private var mTouchStartX = 0f
     private var mTouchStartY = 0f
@@ -31,8 +24,6 @@ class FloatViewManager() {
     private var y = 0f
     lateinit var mWindowManager:WindowManager
     lateinit var context: Context
-
-    private var initial: Position? = null
 
     constructor(context: Context, mWindowManager:WindowManager) : this() {
         this.mWindowManager=mWindowManager
@@ -100,15 +91,9 @@ class FloatViewManager() {
             y = 100
         }
 
-    /**
-     * @param
-     * @description 在手機螢幕上顯示自定義的FloatView
-     * @author ldm
-     * @time 2016/8/17 13:47
-     */
     fun showFloatViewOnWindow() {
-        floatWidth = Tool().dpToPx(context,200)
-        floatHeight =Tool().dpToPx(context,200)// mWindowManager.defaultDisplay.height / 2
+        var floatWidth = Tool().dpToPx(context,200)
+        var  floatHeight =Tool().dpToPx(context,200)// mWindowManager.defaultDisplay.height / 2
         parmas.width = floatWidth
         parmas.height = floatHeight
         //視窗圖案放置位置
@@ -116,16 +101,17 @@ class FloatViewManager() {
         // 如果忽略gravity屬性，那麼它表示視窗的絕對X位置。
         parmas.x = mWindowManager!!.defaultDisplay.width - floatWidth
         //如果忽略gravity屬性，那麼它表示視窗的絕對Y位置。
-        parmas!!.y = 0
+        parmas.y = 0
         ////電話視窗。它用於電話互動（特別是呼入）。它置於所有應用程式之上，狀態列之下。
         parmas.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT
+        //Android O以後要改為TYPE_APPLICATION_OVERLAY
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             parmas.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
         } else {
             parmas.type = WindowManager.LayoutParams.TYPE_PHONE;
         }
         //FLAG_NOT_FOCUSABLE讓window不能獲得焦點，這樣使用者快就不能向該window傳送按鍵事件及按鈕事件
-//FLAG_NOT_TOUCH_MODAL即使在該window在可獲得焦點情況下，仍然把該window之外的任何event傳送到該window之後的其他window.
+        //FLAG_NOT_TOUCH_MODAL即使在該window在可獲得焦點情況下，仍然把該window之外的任何event傳送到該window之後的其他window.
         parmas.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
         // 期望的點陣圖格式。預設為不透明。參考android.graphics.PixelFormat。
         parmas.format = PixelFormat.RGBA_8888
