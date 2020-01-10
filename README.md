@@ -22,7 +22,8 @@ AndroidManifest.xml
         <service android:name=".FLoatService" />
     </application>
 </manifest>
-  
+MainActivity.kt
+
       class MainActivity : AppCompatActivity() {
        var TAG = "MainActivity"
        var OVERLAY_PERMISSION_REQ_CODE = 999
@@ -161,7 +162,7 @@ FloatViewManager.kt 設定浮動視窗基本資料，包含移動的邏輯
            //更新浮动窗口位置参数
            parmas.x = (x - mTouchStartX).toInt();
            parmas.y = (y - mTouchStartY).toInt();
-
+           //更新浮動視窗位置
            mWindowManager!!.updateViewLayout(mFloatView, parmas)
        }
 
@@ -177,11 +178,13 @@ FloatViewManager.kt 設定浮動視窗基本資料，包含移動的邏輯
            PixelFormat.TRANSLUCENT)
            .apply {
                gravity = Gravity.TOP or Gravity.START
+               //預設初始位置
                x = 100
                y = 100
            }
 
        fun showFloatViewOnWindow() {
+           //設計浮動視窗大小
            var floatWidth = Tool().dpToPx(context,200)
            var  floatHeight =Tool().dpToPx(context,200)// mWindowManager.defaultDisplay.height / 2
            parmas.width = floatWidth
