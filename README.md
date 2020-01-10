@@ -23,7 +23,6 @@ AndroidManifest.xml
     </application>
 </manifest>
   
-MainActivity.kt 程式進入點
       class MainActivity : AppCompatActivity() {
        var TAG = "MainActivity"
        var OVERLAY_PERMISSION_REQ_CODE = 999
@@ -77,9 +76,10 @@ MainActivity.kt 程式進入點
      }
 
 懸浮服務 FloatService.kt
-     class FLoatService : Service() {
-         var context:Context =this
-         lateinit var floatViewManager:FloatViewManager
+
+        class FLoatService : Service() {
+            var context:Context =this
+            lateinit var floatViewManager:FloatViewManager
 
          override fun onBind(p0: Intent?): IBinder? {
              TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -102,6 +102,7 @@ MainActivity.kt 程式進入點
      }
   
 FloatViewManager.kt 設定浮動視窗基本資料，包含移動的邏輯
+
      class FloatViewManager() {
        val TAG = FloatViewManager::class.java.simpleName
        //自定義的FloatView
@@ -216,6 +217,7 @@ FloatViewManager.kt 設定浮動視窗基本資料，包含移動的邏輯
      }
  
 FloatView.kt 浮動視窗View 的程式
+
      class FloatView: View.OnClickListener,View.OnTouchListener{
        var TAG: String = FloatView::class.java.getSimpleName()
        fun FloatView(){
