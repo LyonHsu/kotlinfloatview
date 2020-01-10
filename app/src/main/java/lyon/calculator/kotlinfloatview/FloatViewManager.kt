@@ -17,6 +17,7 @@ class FloatViewManager() {
     val TAG = FloatViewManager::class.java.simpleName
     //自定義的FloatView
     private var mFloatView: View? = null
+    var floatView:FloatView = FloatView()
     //視窗管理類
     private var mTouchStartX = 0f
     private var mTouchStartY = 0f
@@ -28,18 +29,16 @@ class FloatViewManager() {
     constructor(context: Context, mWindowManager:WindowManager) : this() {
         this.mWindowManager=mWindowManager
         this.context=context
-        mFloatView = getFloatView(context)
-        mFloatView!!.setOnClickListener {
-            Toast.makeText(context, "You click the Float! contentId:42554", Toast.LENGTH_LONG).show()
-        }
-        mFloatView!!.setOnKeyListener { view, i, keyEvent -> false }
-        mFloatView!!.setOnTouchListener(object : OnTouchListener {
-            override fun onTouch(view: View, event: MotionEvent): Boolean {
-                Log.d(TAG, "motionEvent:$event")
-                x = event.getRawX();
-                y = event.getRawY() - 25; // 25是系統狀態列的高度
-                Log.i("currP", "currX" + x + "====currY" + y);
+        floatView = FloatView()
+        mFloatView = floatView.getView(context)
 
+        mFloatView!!.setOnClickListener {
+            Toast.makeText(context, "You click the Float Image View!", Toast.LENGTH_LONG).show()
+        }
+
+        floatView!!.setOnFloatMoveTouch(object : FloatView.FloatMoveTouch {
+            override fun OnTouch(view: View, event: MotionEvent) {
+                Log.d(TAG, "motionEvent:$event")
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
                         // 獲取相對View的座標，即以此View左上角為原點
@@ -50,8 +49,8 @@ class FloatViewManager() {
                     }
                     MotionEvent.ACTION_MOVE -> {
                         //获取相对View的坐标，即以此View左上角为原点
-                        x =event.x
-                        y = event.y //25是系统状态栏的高度
+                        x = event.getRawX();
+                        y = event.getRawY()-Tool().dpToPx(context,25); // 25是系統狀態列的高度
                         Log.i("currP", "floatposition event.x:"+event.x+",event.y:"+event.y)
                         updateViewPosition()
                     }
@@ -59,10 +58,8 @@ class FloatViewManager() {
                         updateViewPosition()
                         mTouchStartX = 0f
                         mTouchStartY= 0f
-                        Log.i("updateViewPosition", "floatposition parmas.x:" + parmas!!.x + "====parmas.y:" + parmas!!.y)
                     }
                 }
-                return true
             }
         })
     }
@@ -71,6 +68,7 @@ class FloatViewManager() {
         //更新浮动窗口位置参数
         parmas.x = (x - mTouchStartX).toInt();
         parmas.y = (y - mTouchStartY).toInt();
+        Log.i("updateViewPosition", "floatposition parmas.x:" + parmas.x + "====parmas.y:" + parmas.y)
 
         mWindowManager!!.updateViewLayout(mFloatView, parmas)
     }
@@ -86,22 +84,22 @@ class FloatViewManager() {
         WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
         PixelFormat.TRANSLUCENT)
         .apply {
-            gravity = Gravity.TOP or Gravity.START
-            x = 100
-            y = 100
+            gravity=Gravity.TOP or Gravity.LEFT
+            x=100
+            y=100
         }
 
     fun showFloatViewOnWindow() {
-        var floatWidth = Tool().dpToPx(context,200)
-        var  floatHeight =Tool().dpToPx(context,200)// mWindowManager.defaultDisplay.height / 2
+        var floatWidth = Tool().dpToPx(context,220)
+        var  floatHeight =Tool().dpToPx(context,240)// mWindowManager.defaultDisplay.height / 2
         parmas.width = floatWidth
         parmas.height = floatHeight
         //視窗圖案放置位置
-        parmas!!.gravity = Gravity.LEFT or Gravity.CENTER
+        parmas!!.gravity = Gravity.TOP or Gravity.LEFT
         // 如果忽略gravity屬性，那麼它表示視窗的絕對X位置。
-        parmas.x = mWindowManager!!.defaultDisplay.width - floatWidth
+        parmas.x = 100
         //如果忽略gravity屬性，那麼它表示視窗的絕對Y位置。
-        parmas.y = 0
+        parmas.y = 100
         ////電話視窗。它用於電話互動（特別是呼入）。它置於所有應用程式之上，狀態列之下。
         parmas.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT
         //Android O以後要改為TYPE_APPLICATION_OVERLAY
