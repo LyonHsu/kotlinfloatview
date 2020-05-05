@@ -16,6 +16,9 @@ import android.widget.Toast
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
+/**
+ *  ref.http://afra55.github.io/2017/04/26/floating_view/
+ */
 class FloatViewManager() {
     val TAG = FloatViewManager::class.java.simpleName
     //自定義的FloatView
