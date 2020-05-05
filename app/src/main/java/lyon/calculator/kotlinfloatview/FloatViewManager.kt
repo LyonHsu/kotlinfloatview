@@ -2,6 +2,7 @@ package lyon.calculator.kotlinfloatview
 
 import android.content.Context
 import android.graphics.PixelFormat
+import android.graphics.Point
 import android.icu.text.Transliterator
 import android.os.Build
 import android.util.Log
@@ -9,8 +10,10 @@ import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
+import android.view.View.VISIBLE
 import android.view.WindowManager
 import android.widget.Toast
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 class FloatViewManager() {
@@ -23,12 +26,29 @@ class FloatViewManager() {
     private var mTouchStartY = 0f
     private var x = 0f
     private var y = 0f
+    val floatW = 50
+    val floatH = 50
+     var floatWidth:Int=0
+     var floatHeight:Int=0
+    /**
+     * 屏幕宽高
+     */
+    var mScreenWidth = 0
+    var mScreenHeight:Int = 0
+    /**
+     * 透明度
+     */
+    private var mCurrentIconAlpha: Float = 1f
+
     lateinit var mWindowManager:WindowManager
     lateinit var context: Context
-
+    var isMove:Boolean = false;
     constructor(context: Context, mWindowManager:WindowManager) : this() {
         this.mWindowManager=mWindowManager
         this.context=context
+        getScreenSize()
+        floatWidth = Tool().dpToPx(context,floatW)
+        floatHeight =Tool().dpToPx(context,floatH)
         floatView = FloatView()
         mFloatView = floatView.getView(context)
 
@@ -44,6 +64,7 @@ class FloatViewManager() {
                         // 獲取相對View的座標，即以此View左上角為原點
                         mTouchStartX = event.getX();
                         mTouchStartY = event.getY();
+                        isMove = false;
                         Log.i("startP", "startX" + mTouchStartX + "====startY"
                                 + mTouchStartY);
                     }
@@ -55,6 +76,7 @@ class FloatViewManager() {
                         updateViewPosition()
                     }
                     MotionEvent.ACTION_UP -> {
+                        isMove = false;
                         updateViewPosition()
                         mTouchStartX = 0f
                         mTouchStartY= 0f
@@ -66,11 +88,33 @@ class FloatViewManager() {
 
     private fun updateViewPosition() {
         //更新浮动窗口位置参数
-        parmas.x = (x - mTouchStartX).toInt();
-        parmas.y = (y - mTouchStartY).toInt();
-        Log.i("updateViewPosition", "floatposition parmas.x:" + parmas.x + "====parmas.y:" + parmas.y)
+        val newX = (x - mTouchStartX).toInt();
+        val newY = (y - mTouchStartY).toInt();
 
-        mWindowManager!!.updateViewLayout(mFloatView, parmas)
+        if(abs(newX-parmas.x) >50 || abs(newY-parmas.y) >50) {
+            isMove = true;
+            //更新浮动窗口位置参数
+            parmas.x =newX
+            parmas.y =newY
+
+            //判斷是否顯示移除floatView
+            val offset = Tool().dpToPx(context,100)
+            var ScreenX1 = (mScreenWidth-(parmas.width+offset))/2
+            var ScreenX2 =(mScreenWidth+(parmas.width+offset))/2
+            var ScreenH1 = (mScreenHeight-(parmas.height+offset))/5*4
+            var ScreenH2 = (mScreenHeight+(parmas.height+offset))/5*4
+            if(newX>ScreenX1 && newX<ScreenX2 && newY>ScreenH1 && newY <ScreenH2){
+                parmas.x =(mScreenWidth-parmas.width)/2
+                parmas.y = mScreenHeight/5*4
+                floatView.closeImg.visibility= VISIBLE
+            }else{
+                floatView.closeImg.visibility= View.GONE
+            }
+
+
+            mWindowManager!!.updateViewLayout(mFloatView, parmas)
+        }
+        Log.i("updateViewPosition", "floatposition parmas.x:" + parmas.x + "====parmas.y:" + parmas.y)
     }
 
     private fun getFloatView(context: Context): View? {
@@ -90,8 +134,6 @@ class FloatViewManager() {
         }
 
     fun showFloatViewOnWindow() {
-        var floatWidth = Tool().dpToPx(context,220)
-        var  floatHeight =Tool().dpToPx(context,240)// mWindowManager.defaultDisplay.height / 2
         parmas.width = floatWidth
         parmas.height = floatHeight
         //視窗圖案放置位置
@@ -114,6 +156,19 @@ class FloatViewManager() {
         // 期望的點陣圖格式。預設為不透明。參考android.graphics.PixelFormat。
         parmas.format = PixelFormat.RGBA_8888
         mWindowManager!!.addView(mFloatView, parmas)
+    }
+
+    private fun getScreenSize() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            val point = Point()
+            mWindowManager.defaultDisplay.getSize(point)
+            mScreenWidth = point.x
+            mScreenHeight = point.y
+        } else {
+            mScreenWidth = mWindowManager.defaultDisplay.width
+            mScreenHeight = mWindowManager.defaultDisplay.height
+        }
+        mCurrentIconAlpha = 70 / 100f
     }
 
 

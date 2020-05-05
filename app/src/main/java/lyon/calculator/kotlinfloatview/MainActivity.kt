@@ -9,6 +9,7 @@ import android.provider.Settings
 import android.view.MotionEvent
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -20,6 +21,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         content = this
+
+        button.setOnClickListener {
+            onStart()
+        }
     }
 
     override fun onStart() {

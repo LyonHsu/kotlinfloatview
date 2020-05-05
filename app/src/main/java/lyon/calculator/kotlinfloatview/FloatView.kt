@@ -12,7 +12,7 @@ import android.widget.Toast
 
 class FloatView: View.OnClickListener,View.OnTouchListener{
     var TAG: String = FloatView::class.java.getSimpleName()
-
+    lateinit var closeImg:ImageView
     interface FloatMoveTouch {
         fun OnTouch(view: View, event: MotionEvent)
     }
@@ -25,7 +25,8 @@ class FloatView: View.OnClickListener,View.OnTouchListener{
     fun  getView(context: Context):View
     {
         val view = LayoutInflater.from(context).inflate(R.layout.float_view,  null)
-        var closeImg = view.findViewById<View>(R.id.closeImg) as ImageView
+        closeImg = view.findViewById<View>(R.id.closeImg) as ImageView
+        closeImg.visibility=View.GONE
         closeImg.setOnClickListener(View.OnClickListener {
             Toast.makeText(context, "the float closeImg is clicked.", Toast.LENGTH_LONG).show()
             context.stopService(Intent(context, FLoatService::class.java))
